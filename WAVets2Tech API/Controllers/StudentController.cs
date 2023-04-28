@@ -17,13 +17,91 @@ namespace WAVets2Tech_API.Controllers
         }
 
         [HttpGet]
-        
-        [Route("GetStudents")]
 
         public async Task<IActionResult> Get()
         {
             var students = await _dbContext.Students.ToListAsync();
+
+            if (students == null || students.Count == 0)
+            {
+                return NotFound();
+            }
+
             return Ok(students);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            if (_dbContext.Students == null)
+            {
+                return NotFound();
+            }
+
+            var students = await _dbContext.Students.FindAsync(id);
+            if (students == null)
+            {
+                return NotFound("No students found with the provided IDs.");
+            }
+
+            return Ok(students);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutStudent(int id, Student student)
+        {
+            if (id != student.InternalId)
+            {
+                return BadRequest();
+            }
+
+            _dbContext.Entry(student).State = EntityState.Modified;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostStudent(Student student)
+        {
+            _dbContext.Students.Add(student);
+            await _dbContext.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(Get), new { id = student.InternalId }, student);
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteStudents( int[] id)
+        {
+            if (id == null || id.Length == 0)
+            {
+                return BadRequest("No student IDs provided.");
+            }
+
+            var students = await _dbContext.Students
+                .Where(s => id.Contains(s.InternalId))
+                .ToListAsync();
+
+            if (students == null || students.Count == 0)
+            {
+                return NotFound("No students found with the provided IDs.");
+            }   
+
+            _dbContext.Students.RemoveRange(students);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok($"Deleted {students.Count} students.");
+
+ 
         }
     }
 }
+

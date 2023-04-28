@@ -5,7 +5,7 @@ const App = () => {
     const [students, setStudents] = useState([]);
 
     useEffect(() => {
-        fetch("api/student/GetStudents")
+        fetch("api/student")
             .then((response) => {
                 return response.json();
             })
@@ -17,11 +17,17 @@ const App = () => {
 
     return (<main>
         {
-            (students != null) ? students.map((index) => <h3>this is email: {index.email}
-            </h3>) : <div>Loading</div>
+            (students != null) ?
+                students.map((index, id) => (
+                    <h3 key={id}>
+                        Id: {index.internalId}, Email: {index.email}, First Name: {index.firstName}, Last Name: {index.lastName}, Password: {index.passwordHash}
+                    </h3>
+                ))
+                :
+                <div>Loading</div>
         }
-
-    </main>)
+    </main>
+    )
 }
 
 export default App;
