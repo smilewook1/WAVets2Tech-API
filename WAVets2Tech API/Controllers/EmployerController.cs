@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WAVets2Tech_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,15 +46,6 @@ namespace WAVets2Tech_API.Controllers
             return Ok(employers);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PostEmployer(Employer employers)
-        {
-            _dbContext.Employers.Add(employers);
-            await _dbContext.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(Get), new { id = employers.InternalId }, employers);
-        }
-
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployer(int id, Employer employers)
         {
@@ -76,6 +66,34 @@ namespace WAVets2Tech_API.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostEmployer(Employer employers)
+        {
+            _dbContext.Employers.Add(employers);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpDelete()]
+        public async Task<IActionResult> DeleteEmployers([FromQuery] List<int> id)
+        {
+            var employer = await _dbContext.Employers
+                .Where(s => id.Contains(s.InternalId))
+                .ToListAsync();
+
+            if (employer == null || employer.Count == 0)
+            {
+                return NotFound("No employer found with the provided IDs.");
+            }
+
+            _dbContext.Employers.RemoveRange(employer);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok($"Deleted {employer.Count} employer.");
+
         }
 
         [HttpDelete("{id}")]

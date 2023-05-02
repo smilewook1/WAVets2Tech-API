@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WAVets2Tech_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +40,7 @@ namespace WAVets2Tech_API.Controllers
             var students = await _dbContext.Students.FindAsync(id);
             if (students == null)
             {
-                return NotFound("No students found with the provided IDs.");
+                return NotFound();
             }
 
             return Ok(students);
@@ -56,7 +55,7 @@ namespace WAVets2Tech_API.Controllers
             }
 
             _dbContext.Entry(student).State = EntityState.Modified;
-
+                
             try
             {
                 await _dbContext.SaveChangesAsync();
@@ -75,17 +74,13 @@ namespace WAVets2Tech_API.Controllers
             _dbContext.Students.Add(student);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Get), new { id = student.InternalId }, student);
-        }
-        
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStudents( int[] id)
-        {
-            if (id == null || id.Length == 0)
-            {
-                return BadRequest("No student IDs provided.");
-            }
+            return Ok();
 
+        }
+
+        [HttpDelete()]
+        public async Task<IActionResult> DeleteStudents([FromQuery] List<int> id)
+        {
             var students = await _dbContext.Students
                 .Where(s => id.Contains(s.InternalId))
                 .ToListAsync();
@@ -100,8 +95,29 @@ namespace WAVets2Tech_API.Controllers
 
             return Ok($"Deleted {students.Count} students.");
 
- 
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteStudent(int id)
+        {
+            if (_dbContext.Students == null)
+            {
+                return NotFound();
+            }
+
+            var students = await _dbContext.Students.FindAsync(id);
+            if (students == null)
+            {
+                return NotFound("No students found with the provided IDs.");
+            }
+
+            _dbContext.Students.Remove(students);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+
+        }
+
     }
 }
 
