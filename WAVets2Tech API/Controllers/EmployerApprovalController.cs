@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WAVets2Tech_API.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 
 namespace WAVets2Tech_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentController : ControllerBase
+    public class EmployerApprovalController : ControllerBase
     {
         private readonly Wavets2TechContext _dbContext;
-        private readonly IConfiguration _configuration;
-        public StudentController(Wavets2TechContext dbContext)
+
+        public EmployerApprovalController(Wavets2TechContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -20,7 +19,7 @@ namespace WAVets2Tech_API.Controllers
 
         public async Task<IActionResult> Get()
         {
-            var students = await _dbContext.Students.ToListAsync();
+            var students = await _dbContext.EmployerApprovals.ToListAsync();
 
             if (students == null || students.Count == 0)
             {
@@ -33,12 +32,12 @@ namespace WAVets2Tech_API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            if (_dbContext.Students == null)
+            if (_dbContext.EmployerApprovals == null)
             {
                 return NotFound();
             }
 
-            var students = await _dbContext.Students.FindAsync(id);
+            var students = await _dbContext.EmployerApprovals.FindAsync(id);
             if (students == null)
             {
                 return NotFound();
@@ -48,7 +47,7 @@ namespace WAVets2Tech_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudent(int id, Student student)
+        public async Task<IActionResult> PutStudent(int id, EmployerApproval student)
         {
             if (id != student.InternalId)
             {
@@ -56,7 +55,7 @@ namespace WAVets2Tech_API.Controllers
             }
 
             _dbContext.Entry(student).State = EntityState.Modified;
-                
+
             try
             {
                 await _dbContext.SaveChangesAsync();
@@ -70,29 +69,28 @@ namespace WAVets2Tech_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostStudent(Student student)
+        public async Task<IActionResult> PostStudent(EmployerApproval student)
         {
-            _dbContext.Students.Add(student);
+            _dbContext.EmployerApprovals.Add(student);
             await _dbContext.SaveChangesAsync();
 
             return Ok();
 
         }
 
-
         [HttpDelete()]
         public async Task<IActionResult> DeleteStudents([FromQuery] List<int> id)
         {
-            var students = await _dbContext.Students
+            var students = await _dbContext.EmployerApprovals
                 .Where(s => id.Contains(s.InternalId))
                 .ToListAsync();
 
             if (students == null || students.Count == 0)
             {
                 return NotFound("No students found with the provided IDs.");
-            }   
+            }
 
-            _dbContext.Students.RemoveRange(students);
+            _dbContext.EmployerApprovals.RemoveRange(students);
             await _dbContext.SaveChangesAsync();
 
             return Ok($"Deleted {students.Count} students.");
@@ -102,24 +100,22 @@ namespace WAVets2Tech_API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudent(int id)
         {
-            if (_dbContext.Students == null)
+            if (_dbContext.EmployerApprovals == null)
             {
                 return NotFound();
             }
 
-            var students = await _dbContext.Students.FindAsync(id);
+            var students = await _dbContext.EmployerApprovals.FindAsync(id);
             if (students == null)
             {
                 return NotFound("No students found with the provided IDs.");
             }
 
-            _dbContext.Students.Remove(students);
+            _dbContext.EmployerApprovals.Remove(students);
             await _dbContext.SaveChangesAsync();
 
             return Ok();
 
         }
-
     }
 }
-

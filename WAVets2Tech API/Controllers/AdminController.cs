@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using WAVets2Tech_API.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+
 
 namespace WAVets2Tech_API.Controllers
 {
@@ -9,14 +13,13 @@ namespace WAVets2Tech_API.Controllers
     public class AdminController : ControllerBase
     {
         private readonly Wavets2TechContext _dbContext;
-
+        private readonly IConfiguration _configuration;
         public AdminController(Wavets2TechContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         [HttpGet]
-
         public async Task<IActionResult> Get()
         {
             var admins = await _dbContext.Admins.ToListAsync();

@@ -51,11 +51,6 @@ public partial class Employer
     public string? About { get; set; }
 
     /// <summary>
-    /// The name of the company this employer works for.
-    /// </summary>
-    public string? CompanyName { get; set; }
-
-    /// <summary>
     /// References the company this employer works for.
     /// </summary>
     public int CompanyId { get; set; }
@@ -71,9 +66,5 @@ public partial class Employer
 
     public virtual Company Company { get; set; } = null!;
 
-    public virtual ICollection<HelpRequest> HelpRequests { get; } = new List<HelpRequest>();
-
     public virtual ICollection<Job> Jobs { get; } = new List<Job>();
-
-    public virtual ICollection<Preference> Preferences { get; } = new List<Preference>();
 }

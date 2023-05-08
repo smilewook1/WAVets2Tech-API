@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace WAVets2Tech_API.Models;
 
@@ -15,35 +16,35 @@ public partial class Wavets2TechContext : DbContext
     {
     }
 
-    public virtual DbSet<Admin>? Admins { get; set; }
+    public virtual DbSet<Admin> Admins { get; set; }
 
-    public virtual DbSet<BookmarkedJob>? BookmarkedJobs { get; set; }
+    public virtual DbSet<BookmarkedJob> BookmarkedJobs { get; set; }
 
-    public virtual DbSet<BookmarkedStudent>? BookmarkedStudents { get; set; }
+    public virtual DbSet<BookmarkedStudent> BookmarkedStudents { get; set; }
 
-    public virtual DbSet<Company>? Companies { get; set; }
+    public virtual DbSet<Company> Companies { get; set; }
 
-    public virtual DbSet<Document>? Documents { get; set; }
+    public virtual DbSet<Document> Documents { get; set; }
 
-    public virtual DbSet<Education>? Educations { get; set; }
+    public virtual DbSet<Education> Educations { get; set; }
 
-    public virtual DbSet<Employer>? Employers { get; set; }
+    public virtual DbSet<Employer> Employers { get; set; }
 
-    public virtual DbSet<Experience>? Experiences { get; set; }
+    public virtual DbSet<EmployerApproval> EmployerApprovals { get; set; }
 
-    public virtual DbSet<HelpRequest>? HelpRequests { get; set; }
+    public virtual DbSet<Experience> Experiences { get; set; }
 
-    public virtual DbSet<Job>? Jobs { get; set; }
+    public virtual DbSet<Job> Jobs { get; set; }
 
-    public virtual DbSet<MilitaryBackground>? MilitaryBackgrounds { get; set; }
+    public virtual DbSet<MilitaryBackground> MilitaryBackgrounds { get; set; }
 
-    public virtual DbSet<Preference>? Preferences { get; set; }
+    public virtual DbSet<Student> Students { get; set; }
 
-    public virtual DbSet<Student>? Students { get; set; }
+    public virtual DbSet<StudentApproval> StudentApprovals { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(local);Database=WAVets2Tech;Trusted_Connection=True; TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.;Database=WAVets2Tech; Integrated Security = True; TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,50 +54,30 @@ public partial class Wavets2TechContext : DbContext
         {
             entity.HasKey(e => e.InternalId);
 
-            entity.ToTable("Admin", tb => tb.HasComment("IMPORTANT: Read the description of the column \"control_level.\" References to this table in code must ALWAYS account for the value of \"control_level\" to prevent security issues.\r\n\r\nStores information on administrator accounts. Less thorough than the other two account types, because not as much is necessary."));
+            entity.ToTable("Admin");
 
-            entity.Property(e => e.InternalId)
-                .HasComment("A unique identifier to distinguish this from all other entries in the same table. Automatically generates when the record is created.\r\n\r\nVERY IMPORTANT: There WILL be overlap between the internal IDs of this table and the internal IDs of other tables; this does NOT mean the two records are correlated in any way! Please use the foreign key columns when associating records of one table to records of another.")
-                .HasColumnName("internal_id");
-            entity.Property(e => e.About)
-                .HasMaxLength(4000)
-                .IsUnicode(false)
-                .HasComment("A short to medium-length description with any additional, important information. Max 4000 characters, but probably won't need that much.")
-                .HasColumnName("about");
+            entity.Property(e => e.InternalId).HasColumnName("internal_id");
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasComment("Mailbox address of the staff member behind this account.")
                 .HasColumnName("address");
-            entity.Property(e => e.ControlLevel)
-                .HasComment("Serves as an enumerable to determine how much access/permissions the admin account has. The higher the number, the greater the permissions. As of writing, the current tiers have yet to be decided.")
-                .HasColumnName("control_level");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasComment("The (business) email address of the staff member behind this account.")
                 .HasColumnName("email");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasComment("The real first name of the staff member behind this account.")
                 .HasColumnName("first_name");
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasComment("The real last name of the staff member behind this account.")
                 .HasColumnName("last_name");
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasComment("Used to store the password hash (not the password itself) of the account. May or may not be used, depending on how we choose to do authentication.")
                 .HasColumnName("password_hash");
-            entity.Property(e => e.Phone)
-                .HasComment("Business phone number of the staff member behind this account.")
-                .HasColumnName("phone");
-            entity.Property(e => e.ProfilePicture)
-                .HasComment("Optional field intended to store a picture of the admin. May or may not be used, though - including it just in case.\r\n\r\nIMPORTANT: This can TECHNICALLY store other types of files as well. Make sure when coding the forms, to put a restriction so that only certain image file formats/sizes can be uploaded to the database!")
-                .HasColumnName("profile_picture");
+            entity.Property(e => e.Phone).HasColumnName("phone");
         });
 
         modelBuilder.Entity<BookmarkedJob>(entity =>
@@ -307,11 +288,6 @@ public partial class Wavets2TechContext : DbContext
             entity.Property(e => e.CompanyId)
                 .HasComment("References the company this employer works for.")
                 .HasColumnName("company_id");
-            entity.Property(e => e.CompanyName)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasComment("The name of the company this employer works for.")
-                .HasColumnName("company_name");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -343,6 +319,40 @@ public partial class Wavets2TechContext : DbContext
                 .HasForeignKey(d => d.CompanyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Employer_To_Company_FK");
+        });
+
+        modelBuilder.Entity<EmployerApproval>(entity =>
+        {
+            entity.HasKey(e => e.InternalId).HasName("PK__Employer__1C4927D2DF33EBAF");
+
+            entity.ToTable("EmployerApproval");
+
+            entity.Property(e => e.InternalId).HasColumnName("internal_id");
+            entity.Property(e => e.CompanyEmail)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("company_email");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.CompanyName)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("company_name");
+            entity.Property(e => e.EmployerEmail)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("employer_email");
+            entity.Property(e => e.EmployerFirstname)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("employer_firstname");
+            entity.Property(e => e.EmployerLastname)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("employer_lastname");
+            entity.Property(e => e.EmployerPassword)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("employer_password");
         });
 
         modelBuilder.Entity<Experience>(entity =>
@@ -390,63 +400,6 @@ public partial class Wavets2TechContext : DbContext
                 .HasForeignKey(d => d.StudentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Experience_To_Student_FK");
-        });
-
-        modelBuilder.Entity<HelpRequest>(entity =>
-        {
-            entity.HasKey(e => e.InternalId);
-
-            entity.ToTable("Help_Request", tb => tb.HasComment("IMPORTANT: Read the description of the columns \"request_type\" and \"account_type.\" References to this table in code must ALWAYS account for the value of \"account_type\" to prevent students from being mixed up with employers.\r\n\r\nA table to track help requests that have been submitted, the details of the request, and whether or not they have been resolved."));
-
-            entity.Property(e => e.InternalId)
-                .HasComment("A unique identifier to distinguish this from all other entries in the same table. Automatically generates when the record is created.\r\n\r\nVERY IMPORTANT: There WILL be overlap between the internal IDs of this table and the internal IDs of other tables; this does NOT mean the two records are correlated in any way! Please use the foreign key columns when associating records of one table to records of another.")
-                .HasColumnName("internal_id");
-            entity.Property(e => e.AccountId)
-                .HasComment("Should be left blank if there is not a student/employer account associated with this request.")
-                .HasColumnName("account_id");
-            entity.Property(e => e.AccountType)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasDefaultValueSql("('None')")
-                .HasComment("A varchar serving as an enumerable, representing the type of account (if applicable): \"None\" \"Student\" or \"Employer\" (Admin-related issues should be resolved in some other way)")
-                .HasColumnName("account_type");
-            entity.Property(e => e.RequestAccountEmail)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasComment("Nullable, in case the person requesting does not have an account.")
-                .HasColumnName("request_account_email");
-            entity.Property(e => e.RequestContactEmail)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasComment("The email address to send any email related to this help request. IMPORTANT: Make sure emails related to help requests are sent to this address, rather than the account email!")
-                .HasColumnName("request_contact_email");
-            entity.Property(e => e.RequestDetails)
-                .HasMaxLength(4000)
-                .IsUnicode(false)
-                .HasComment("A field for someone submitting a help request to describe the issue in detail. Max 4000 characters.")
-                .HasColumnName("request_details");
-            entity.Property(e => e.RequestSolved)
-                .HasComment("0 for no, 1 for yes")
-                .HasColumnName("request_solved");
-            entity.Property(e => e.RequestType)
-                .HasComment("An integer serving as an enumerable, representing the different categories of support. This is to help narrow down who is most qualified to help.")
-                .HasColumnName("request_type");
-            entity.Property(e => e.SolvedAdminId)
-                .HasComment("The internal ID of the admin that resolved the request, if applicable.")
-                .HasColumnName("solved_admin_id");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.HelpRequests)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("Help_Request_Account_Is_Employer");
-
-            entity.HasOne(d => d.AccountNavigation).WithMany(p => p.HelpRequests)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("Help_Request_Account_Is_Student");
-
-            entity.HasOne(d => d.SolvedAdmin).WithMany(p => p.HelpRequests)
-                .HasForeignKey(d => d.SolvedAdminId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("Request_Solved_By_Admin");
         });
 
         modelBuilder.Entity<Job>(entity =>
@@ -625,41 +578,6 @@ public partial class Wavets2TechContext : DbContext
                 .HasConstraintName("Military_Background_To_Student_FK");
         });
 
-        modelBuilder.Entity<Preference>(entity =>
-        {
-            entity.HasKey(e => e.InternalId);
-
-            entity.ToTable(tb => tb.HasComment("IMPORTANT: Read the description of the column \"account_type.\" References to this table in code must ALWAYS account for the value of \"account_type\" to prevent the preferences from a different account from being used by accident.\r\n\r\nStores the personal preferences/settings of an an Admin, Employer, or Student account. More columns are planned to be added over time."));
-
-            entity.Property(e => e.InternalId)
-                .HasComment("A unique identifier to distinguish this from all other entries in the same table. Automatically generates when the record is created.\r\n\r\nVERY IMPORTANT: There WILL be overlap between the internal IDs of this table and the internal IDs of other tables; this does NOT mean the two records are correlated in any way! Please use the foreign key columns when associating records of one table to records of another.")
-                .HasColumnName("internal_id");
-            entity.Property(e => e.AccountId)
-                .HasComment("Serves as a foreign key to 3 tables (Student, Employer, and Admin) depending on the value of \"account_type.\" Has minimal constraints to prevent issues. Does NOT change or disappear if the corresponding account is created, to prevent issues.")
-                .HasColumnName("account_id");
-            entity.Property(e => e.AccountType)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasDefaultValueSql("('None')")
-                .HasComment("A varchar functioning as an enumerable variable, with 3 different types: \"Student\" \"Employer\" and \"Admin\"")
-                .HasColumnName("account_type");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.Preferences)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Admin_Account_Preferences");
-
-            entity.HasOne(d => d.AccountNavigation).WithMany(p => p.Preferences)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Employer_Account_Preferences");
-
-            entity.HasOne(d => d.Account1).WithMany(p => p.Preferences)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Student_Account_Preferences");
-        });
-
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasKey(e => e.InternalId);
@@ -720,6 +638,31 @@ public partial class Wavets2TechContext : DbContext
             entity.Property(e => e.ProfilePicture)
                 .HasComment("Optional field intended to store a picture of the student themselves, if one is provided.\r\n\r\nIMPORTANT: This can TECHNICALLY store other types of files as well. Make sure when coding the forms, to put a restriction so that only certain image file formats/sizes can be uploaded to the database!")
                 .HasColumnName("profile_picture");
+        });
+
+        modelBuilder.Entity<StudentApproval>(entity =>
+        {
+            entity.HasKey(e => e.InternalId).HasName("PK__StudentA__1C4927D265860818");
+
+            entity.ToTable("StudentApproval");
+
+            entity.Property(e => e.InternalId).HasColumnName("internal_id");
+            entity.Property(e => e.StudentEmail)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("student_email");
+            entity.Property(e => e.StudentFirstname)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("student_firstname");
+            entity.Property(e => e.StudentLastname)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("student_lastname");
+            entity.Property(e => e.StudentPassword)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("student_password");
         });
 
         OnModelCreatingPartial(modelBuilder);

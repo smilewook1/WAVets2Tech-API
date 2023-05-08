@@ -6,79 +6,83 @@ namespace WAVets2Tech_API.Models
 {
     public class Abs
     {
-        public Response StudentRegistration(Student std, SqlConnection connection)
+        public Response AdminLogin(Admin adm, SqlConnection connection)
         {
+            SqlDataAdapter da = new SqlDataAdapter("xp_logininfo", connection);
+            da.SelectCommand.CommandType = CommandType.StoredProcedure;
+            da.SelectCommand.Parameters.AddWithValue("@Email", adm.Email);
+            da.SelectCommand.Parameters.AddWithValue("@Password_Hash", adm.PasswordHash);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
             Response response = new Response();
-            SqlCommand cmd = new SqlCommand("INSERT INTO Student(first_name, last_name, email, password_hash)" +
-                "VALUES ('"+std.FirstName+ "', '" + std.LastName + "', '" + std.Email + "', '" + std.PasswordHash + "')");
 
-            connection.Open();
-            int i = cmd.ExecuteNonQuery();
-            connection.Close();
 
-            if(i > 0)
+            if (dt.Rows.Count > 0)
             {
                 response.StatusCode = 200;
                 response.StatusMessage = "success";
+
             }
             else
             {
                 response.StatusCode = 100;
-                response.StatusMessage = "fail";
+                response.StatusMessage = "success";
+            }
+
+            return response;
+        }
+        public Response StudentLogin(Student std, SqlConnection connection)
+        {
+            SqlDataAdapter da = new SqlDataAdapter("xp_logininfo", connection);
+            da.SelectCommand.CommandType = CommandType.StoredProcedure;
+            da.SelectCommand.Parameters.AddWithValue("@Email", std.Email);
+            da.SelectCommand.Parameters.AddWithValue("@Password_Hash", std.PasswordHash);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            Response response = new Response();
+
+
+            if (dt.Rows.Count > 0)
+            {
+                response.StatusCode = 200;
+                response.StatusMessage = "success";
+
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.StatusMessage = "success";
             }
 
             return response;
         }
 
-        public Response StudentLogin(Student std, SqlConnection connection)
+        public Response EmployerLogin(Employer emp, SqlConnection connection)
         {
-            SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Student WHERE email = '"+std.Email+"' AND password_hash = '" +std.PasswordHash+"'", connection);
+            SqlDataAdapter da = new SqlDataAdapter("xp_logininfo", connection);
+            da.SelectCommand.CommandType = CommandType.StoredProcedure;
+            da.SelectCommand.Parameters.AddWithValue("@Email", emp.Email);
+            da.SelectCommand.Parameters.AddWithValue("@Password_Hash", emp.PasswordHash);
             DataTable dt = new DataTable();
             da.Fill(dt);
 
             Response response = new Response();
-            
 
-            if(dt.Rows.Count > 0)
+
+            if (dt.Rows.Count > 0)
             {
                 response.StatusCode = 200;
                 response.StatusMessage = "success";
 
-                Student student = new Student();
-                student.InternalId = Convert.ToInt32(dt.Rows[0]["internal_id"]);
-                student.FirstName = Convert.ToString(dt.Rows[0]["first_name"]);
-                student.LastName = Convert.ToString(dt.Rows[0]["last_name"]);
-                student.Email = Convert.ToString(dt.Rows[0]["email"]);
             }
             else
             {
                 response.StatusCode = 100;
                 response.StatusMessage = "success";
-                response.Students = null;
             }
-            
-            return response ;
-        }
 
-        public Response StudentUserApproval(Student std, SqlConnection connection)
-        {
-            Response response = new Response();
-            SqlCommand cmd = new SqlCommand("UPDATE Student SET isApproved = 1 WHERE internal_id = '" + std.InternalId+"'", connection);
-
-            connection.Open();
-            int i = cmd.ExecuteNonQuery();
-            connection.Close();
-
-            if(i > 0)
-            {
-                response.StatusCode = 200;
-                response.StatusMessage = "success";
-            }
-            else
-            {
-                response.StatusCode = 100;
-                response.StatusMessage = "fail";
-            }
             return response;
         }
     }

@@ -15,18 +15,13 @@ const App = () => {
                 })
     }, []);
 
-    useEffect(() => {
-        fetch("api/admin")
-                .then((response) => {
-                    return response.json();
-                })
-            .then(data => {
-                setAdmins(data);
-                })
-    }, []);
 
 
     return (<main>
+        
+        <h1> THIS IS TEST CODE </h1>
+        <h1> THIS IS TEST CODE </h1>
+        <h1> THIS IS TEST CODE </h1>
         {
             (students != null) ?
                 students.map((index, id) => (

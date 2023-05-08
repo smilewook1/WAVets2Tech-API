@@ -1,6 +1,7 @@
 using WAVets2Tech_API.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,8 +12,11 @@ builder.Services.AddDbContext<Wavets2TechContext>();
 
 builder.Services.AddCors();
 
-
-
+builder.Services.AddDbContext<Wavets2TechContext>(options =>
+options.UseSqlServer(
+builder.Configuration.GetConnectionString("Wavets2tech")
+));
+  
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,3 +46,4 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html"); ;
 
 app.Run();
+    

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WAVets2Tech_API.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace WAVets2Tech_API.Controllers
 {
@@ -9,7 +10,7 @@ namespace WAVets2Tech_API.Controllers
     public class EmployerController : ControllerBase
     {
         private readonly Wavets2TechContext _dbContext;
-
+        private readonly IConfiguration _configuration;
         public EmployerController(Wavets2TechContext dbContext)
         {
             _dbContext = dbContext;
@@ -76,6 +77,7 @@ namespace WAVets2Tech_API.Controllers
 
             return Ok();
         }
+
 
         [HttpDelete()]
         public async Task<IActionResult> DeleteEmployers([FromQuery] List<int> id)

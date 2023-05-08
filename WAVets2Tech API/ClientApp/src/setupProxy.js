@@ -9,7 +9,9 @@ const context = [
     "/api/student",
     "/api/employer",
     "/api/company",
-    "/api/admin"
+    "/api/admin",
+    "/api/studentapproval",
+    "/api/employerapproval",
 ];
 
 module.exports = function(app) {

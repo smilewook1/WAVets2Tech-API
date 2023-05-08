@@ -6,10 +6,8 @@ namespace WAVets2Tech_API.Models;
 /// <summary>
 /// A table containing information on student accounts.
 /// </summary>
-public class Student
+public partial class Student
 {
-
-
     /// <summary>
     /// A unique identifier to distinguish this from all other entries in the same table. Automatically generates when the record is created.
     /// 
@@ -84,9 +82,5 @@ public class Student
 
     public virtual ICollection<Experience> Experiences { get; } = new List<Experience>();
 
-    public virtual ICollection<HelpRequest> HelpRequests { get; } = new List<HelpRequest>();
-
     public virtual MilitaryBackground? MilitaryBackground { get; set; }
-
-    public virtual ICollection<Preference> Preferences { get; } = new List<Preference>();
 }
